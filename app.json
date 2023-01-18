@@ -3,8 +3,15 @@
     "name": "iAutoMarket",
     "slug": "iAutoMarket",
     "version": "1.0.0",
+    "scheme": "iautomarket",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "android": {
+      "package": "com.iautomarket"
+    },
+    "ios": {
+      "bundleIdentifier": "com.iautomarket"
+    }
   }
 }
