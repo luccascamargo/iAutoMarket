@@ -6,12 +6,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useRef, useState } from "react";
-import { CardInternal } from "../CardInternal";
-import { Salesman } from "../Salesman";
+import { CardInternal } from "../../components/CardInternal";
+import { Salesman } from "../../components/Salesman";
 import { useTheme } from "styled-components";
 import { ContentHeader, Icon, Title, Container } from "./styles";
 import { RFValue } from "react-native-responsive-fontsize";
-import { useAuth } from "../../contexts/AuthContext";
+import { useNavigation } from "@react-navigation/native";
 
 const width = Dimensions.get("screen").width;
 
@@ -22,16 +22,21 @@ const shadowContent = {
   shadowOffset: { width: 0, height: 0 },
 };
 
-export function AdDetails({ setOpenModal, data }: any) {
+export function AdDetails({ route }: any) {
+  const data = route.params.dataItem;
+  const navigation = useNavigation();
+
   const [ref, setRef] = useState<any>(null);
   const theme = useTheme();
 
   const x = useRef(new Animated.Value(0)).current;
 
+  console.log(data.Users);
+
   return (
     <Container>
       <ContentHeader style={shadowContent}>
-        <Icon name="arrowleft" onPress={() => setOpenModal(false)} />
+        <Icon name="arrowleft" onPress={() => navigation.goBack()} />
         <Title>Detalhes do anúncio</Title>
       </ContentHeader>
 
@@ -122,7 +127,11 @@ export function AdDetails({ setOpenModal, data }: any) {
           <CardInternal data={data} />
         </View>
         <View style={{ width: width, flex: 1 }}>
-          <Salesman />
+          <Salesman
+            name={data.Users.name}
+            email={data.Users.email}
+            phone={data.Users.phone}
+          />
         </View>
       </Animated.ScrollView>
     </Container>

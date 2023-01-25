@@ -10,11 +10,11 @@ import {
   Separator,
   ListOptions,
   Option,
-  TextSelect,
   TextOption,
+  TextSelect,
 } from "./styles";
 
-export function ModalSelect({
+export function ModalOptionals({
   changeModal,
   changeValue,
   value,
@@ -25,8 +25,24 @@ export function ModalSelect({
   const theme = useTheme();
 
   function handleSelectOption(option: any) {
-    changeValue(option);
+    const itemAlreadyExists = value.filter((item) => option.id === item.id);
+
+    if (itemAlreadyExists.length <= 0) {
+      changeValue((previous: any) => [...previous, { id: option.id }]);
+      return;
+    }
+
+    changeValue(value.filter((item) => option.id !== item.id));
   }
+
+  const handleIsActive = (item: any) => {
+    const itemAlreadyExists = value.filter((value) => value.id === item.id);
+
+    if (itemAlreadyExists.length > 0) {
+      return true;
+    }
+    return false;
+  };
 
   const handleInput = (e: any) => {
     setInputText(e);
@@ -56,12 +72,12 @@ export function ModalSelect({
       {filteredData ? (
         <ListOptions
           data={filteredData}
-          keyExtractor={(item) => item.code}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }: any) => (
             <Option
-              key={item.code}
+              key={item.id}
               onPress={() => handleSelectOption(item)}
-              isActive={value.code === item.code}
+              isActive={handleIsActive(item)}
             >
               <TextOption>
                 {item.name[0].toUpperCase() +

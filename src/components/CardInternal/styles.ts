@@ -159,3 +159,9 @@ export const ContentFeatures = styled.View`
   flex-wrap: wrap;
   justify-content: space-between;
 `;
+
+export const OptionalTitle = styled.Text`
+  color: ${({ theme }) => theme.colors.text};
+  font-family: ${({ theme }) => theme.fonts.regular};
+  font-size: ${RFValue(12)}px;
+`;

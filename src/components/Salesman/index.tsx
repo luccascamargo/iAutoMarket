@@ -26,12 +26,9 @@ const shadowContent = {
   shadowOffset: { width: 0, height: 0 },
 };
 
-export function Salesman() {
-  const { user } = useAuth();
-
+export function Salesman({ name, email, phone }: any) {
   const handleWhats = () => {
-    let url =
-      "whatsapp://send?text=testando mensagem" + "&phone=55" + user.phone;
+    let url = "whatsapp://send?text=testando mensagem" + "&phone=55" + phone;
     Linking.openURL(url)
       .then((data) => {
         console.log("WhatsApp aberto");
@@ -42,7 +39,7 @@ export function Salesman() {
   };
 
   const handleMail = () => {
-    Linking.openURL("mailto:" + user.attributes.email)
+    Linking.openURL("mailto:" + email)
       .then((response) => console.log(response))
       .catch((err) => console.log(err));
   };
@@ -71,14 +68,12 @@ export function Salesman() {
               fontFamily: theme.fonts.medium,
             }}
           >
-            {user.attributes.given_name[0]?.toUpperCase()}
+            {name[0]?.toUpperCase()}
           </Text>
         </View>
         <ContentUserInfo>
-          <Name>
-            {user.attributes.given_name + user.attributes.family_name}
-          </Name>
-          <Email>{user.attributes.email}</Email>
+          <Name>{name}</Name>
+          <Email>{email}</Email>
         </ContentUserInfo>
       </ContentUser>
 

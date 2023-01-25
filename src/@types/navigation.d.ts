@@ -1,9 +1,13 @@
+import { iAdvertProps } from "./advert.d";
 export declare global {
   namespace ReactNavigation {
     interface RootParamList {
       favorites: undefined;
+      advert: {
+        dataItem: iAdvertProps;
+      };
       editAdvert: {
-        dataItem: undefined;
+        dataItem: iAdvertProps;
       };
       details: undefined;
       forgotPassword: {
@@ -19,7 +23,7 @@ export declare global {
         signature: undefined;
       };
       filtered: {
-        adverts: undefined;
+        adverts: iAdvertProps;
       };
       createAccount: undefined;
       search: undefined;

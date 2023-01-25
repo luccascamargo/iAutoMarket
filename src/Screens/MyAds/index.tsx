@@ -25,17 +25,15 @@ import {
   Platform,
   TouchableOpacity,
 } from "react-native";
-import { AdDetails } from "../../components/AdDetails";
+import { AdDetails } from "../AdDetails";
 import { Card } from "../../components/Card";
-import {
-  GestureHandlerRootView,
-  RectButton,
-} from "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import axios from "axios";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useTheme } from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
+import { Spinner } from "native-base";
 
 const width = Dimensions.get("screen").width;
 
@@ -55,13 +53,13 @@ const shadowContent = {
 
 export function MyAds() {
   const navigation = useNavigation();
-
-  const [cardInfos, setCardInfos] = useState({});
   const [dataItem, setDataItem] = useState<any>({});
+  const [loading, setLoading] = useState(false);
 
   const [ref, setRef] = useState<any>(null);
-  const [openModalDetails, setOpenModalDetails] = useState(false);
+  const [openModalInactive, setOpenModalInactive] = useState(false);
   const [openModalOptions, setOpenModalOptions] = useState(false);
+  const [openModalRequested, setOpenModalRequested] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [advertsActive, setAdvertsActive] = useState([]);
   const [advertsInactive, setAdvertsInactive] = useState([]);
@@ -116,13 +114,7 @@ export function MyAds() {
       .catch((err) => console.log(err));
   }, [refreshing]);
 
-  const handleOpenAd = (data: any) => {
-    setOpenModalOptions(false);
-    setCardInfos(data);
-    setOpenModalDetails(true);
-  };
-
-  const handleDeleteAdvert = async (id: any) => {
+  const handleDeleteAdvert = async (id: string) => {
     await axios
       .delete(`${urlAPI}/delete-advert`, {
         headers: {
@@ -135,10 +127,47 @@ export function MyAds() {
       .then(() => {
         Alert.alert("Anuncio excluido com sucesso");
         setOpenModalOptions(false);
+        setOpenModalInactive(false);
         onRefresh();
       })
       .catch((err) => console.log(err));
   };
+
+  const handlePublishAdvert = async (id: string) => {
+    setOpenModalInactive(false);
+
+    try {
+      setLoading(true);
+      const { data } = await axios.put("http://localhost:3333/publish", {
+        data: {
+          id,
+          user_id: user.id,
+        },
+      });
+      if (data.code === "ATPLAN") {
+        setLoading(false);
+        Alert.alert(data.message);
+        navigation.navigate("signatures");
+      }
+      setLoading(false);
+      onRefresh();
+      Alert.alert("Seu anuncio vai ser analisado e logo estará ativo");
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        "Algo de errado aconteceu. entre em contato com nosso suporte"
+      );
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Spinner size="lg" color={theme.colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <Container>
@@ -261,7 +290,11 @@ export function MyAds() {
             <ListingCards
               data={advertsActive || []}
               refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                <RefreshControl
+                  tintColor={theme.colors.primary}
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                />
               }
               keyExtractor={(item: any) => item.id}
               renderItem={({ item }: any) => (
@@ -300,16 +333,21 @@ export function MyAds() {
             <ListingCards
               data={advertsRequested || []}
               refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                <RefreshControl
+                  tintColor={theme.colors.primary}
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                />
               }
               keyExtractor={(item: any) => item.id}
               renderItem={({ item }: any) => (
                 <View key={item.id}>
                   <Card
+                    condition="INACTIVE"
                     data={item}
                     onPress={() => {
                       setDataItem(item);
-                      setOpenModalOptions(true);
+                      setOpenModalRequested(true);
                     }}
                   />
                 </View>
@@ -339,16 +377,21 @@ export function MyAds() {
             <ListingCards
               data={advertsInactive || []}
               refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                <RefreshControl
+                  tintColor={theme.colors.primary}
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                />
               }
               keyExtractor={(item: any) => item.id}
               renderItem={({ item }: any) => (
                 <View key={item.id}>
                   <Card
+                    condition="INACTIVE"
                     data={item}
                     onPress={() => {
                       setDataItem(item);
-                      setOpenModalOptions(true);
+                      setOpenModalInactive(true);
                     }}
                   />
                 </View>
@@ -368,14 +411,63 @@ export function MyAds() {
         </View>
       </Animated.ScrollView>
 
+      <Modal visible={openModalRequested} transparent animationType="fade">
+        <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
+          <View style={{ flex: 1 }}>
+            <ContainerModal>
+              <ContentModal style={shadowContent}>
+                <TitleModal>Opções do anúncio</TitleModal>
+                <ButtonModal
+                  onPress={() => {
+                    setOpenModalRequested(false);
+
+                    navigation.navigate("advert", { dataItem });
+                  }}
+                >
+                  <TextModal
+                    style={{
+                      color: theme.colors.text,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
+                    Ver anuncio
+                  </TextModal>
+                </ButtonModal>
+                <ButtonModal onPress={() => handleDeleteAdvert(dataItem.id)}>
+                  <TextRemove>Excluir</TextRemove>
+                </ButtonModal>
+                <ButtonCancel onPress={() => setOpenModalRequested(false)}>
+                  <TextModal>Cancelar</TextModal>
+                </ButtonCancel>
+              </ContentModal>
+            </ContainerModal>
+          </View>
+        </GestureHandlerRootView>
+      </Modal>
+
       <Modal visible={openModalOptions} transparent animationType="fade">
         <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
           <View style={{ flex: 1 }}>
             <ContainerModal>
               <ContentModal style={shadowContent}>
                 <TitleModal>Opções do anúncio</TitleModal>
-                <ButtonModal onPress={() => handleOpenAd(dataItem)}>
-                  <Text>Ver anuncio</Text>
+                <ButtonModal
+                  onPress={() => {
+                    setOpenModalOptions(false);
+
+                    navigation.navigate("advert", { dataItem });
+                  }}
+                >
+                  <TextModal
+                    style={{
+                      color: theme.colors.text,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
+                    Ver anuncio
+                  </TextModal>
                 </ButtonModal>
                 <ButtonModal
                   onPress={() => {
@@ -383,7 +475,15 @@ export function MyAds() {
                     navigation.navigate("editAdvert", { dataItem });
                   }}
                 >
-                  <Text>Editar</Text>
+                  <TextModal
+                    style={{
+                      color: theme.colors.text,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >
+                    Editar
+                  </TextModal>
                 </ButtonModal>
                 <ButtonModal onPress={() => handleDeleteAdvert(dataItem.id)}>
                   <TextRemove>Excluir</TextRemove>
@@ -397,9 +497,33 @@ export function MyAds() {
         </GestureHandlerRootView>
       </Modal>
 
-      <Modal visible={openModalDetails}>
+      <Modal visible={openModalInactive} transparent animationType="fade">
         <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
-          <AdDetails setOpenModal={setOpenModalDetails} data={cardInfos} />
+          <View style={{ flex: 1 }}>
+            <ContainerModal>
+              <ContentModal style={shadowContent}>
+                <TitleModal>Opções do anúncio</TitleModal>
+                <ButtonModal onPress={() => handlePublishAdvert(dataItem.id)}>
+                  <TextModal>Publicar novamente</TextModal>
+                </ButtonModal>
+                <ButtonModal
+                  onPress={() => {
+                    setOpenModalInactive(false);
+
+                    navigation.navigate("advert", { dataItem });
+                  }}
+                >
+                  <TextModal>Ver anuncio</TextModal>
+                </ButtonModal>
+                <ButtonModal onPress={() => handleDeleteAdvert(dataItem.id)}>
+                  <TextRemove>Excluir</TextRemove>
+                </ButtonModal>
+                <ButtonCancel onPress={() => setOpenModalInactive(false)}>
+                  <TextModal>Cancelar</TextModal>
+                </ButtonCancel>
+              </ContentModal>
+            </ContainerModal>
+          </View>
         </GestureHandlerRootView>
       </Modal>
     </Container>

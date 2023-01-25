@@ -59,6 +59,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "styled-components";
 import { Input } from "../../components/Input";
 import { useNavigation } from "@react-navigation/native";
+import { Checkbox } from "native-base";
+import { ModalOptionals } from "../../components/ModalOptionals";
 
 const numberMask = createNumberMask({
   separator: ".",
@@ -83,6 +85,12 @@ const shadowContent = {
 
 export function InsertAd() {
   const navigation = useNavigation();
+  const { user } = useAuth();
+  const theme = useTheme();
+
+  const [loading, setLoading] = useState(false);
+  const [optionals, setOptionals] = useState([]);
+  const [opt, setOpt] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [description, setDescription] = useState("");
   const [isVisible, setIsVisible] = useState(false);
@@ -95,6 +103,22 @@ export function InsertAd() {
   const [price, setPrice] = useState<any>();
   const [plate, setPlate] = useState<any>();
   const [km, setKm] = useState<any>();
+  const [openTypeCar, setOpenTypeCar] = useState(false);
+  const [openBoard, setOpenBoard] = useState(false);
+  const [openModel, setOpenModel] = useState(false);
+  const [openYearModel, setOpenYearModel] = useState(false);
+  const [openModalDoors, setOpenModalDoors] = useState(false);
+  const [openOptionals, setOpenOptionals] = useState(false);
+  const [openTransmissionType, setOpenTransmissionType] = useState(false);
+  const [openColor, setOpenColor] = useState(false);
+  const [typeCarError, setTypeCarError] = useState(false);
+  const [boardError, setBoardError] = useState(false);
+  const [modelError, setModelError] = useState(false);
+  const [modelYearError, setModelYearError] = useState(false);
+  const [colorError, setColorError] = useState(false);
+  const [doorsError, setDoorsError] = useState(false);
+  const [transmissionError, setTransmissionError] = useState(false);
+  const [loadingCreate, setLoadingCreate] = useState(false);
   const [typeCar, setTypeCar] = useState({
     code: "default",
     name: "Selecione",
@@ -129,160 +153,6 @@ export function InsertAd() {
     code: "default",
     name: "Selecione",
   });
-
-  const [openTypeCar, setOpenTypeCar] = useState(false);
-  const [openBoard, setOpenBoard] = useState(false);
-  const [openModel, setOpenModel] = useState(false);
-  const [openYearModel, setOpenYearModel] = useState(false);
-  const [openModalDoors, setOpenModalDoors] = useState(false);
-  const [openTransmissionType, setOpenTransmissionType] = useState(false);
-  const [openColor, setOpenColor] = useState(false);
-
-  const handleOpenTypeCar = () => setOpenTypeCar(!openTypeCar);
-  const handleOpenBoard = () => setOpenBoard(!openBoard);
-  const handleOpenModel = () => setOpenModel(!openModel);
-  const handleOpenYearModel = () => setOpenYearModel(!openYearModel);
-  const handleOpenModalDoors = () => setOpenModalDoors(!openModalDoors);
-  const handleOpenTransmissionType = () =>
-    setOpenTransmissionType(!openTransmissionType);
-  const handleOpenColor = () => setOpenColor(!openColor);
-
-  const [typeCarError, setTypeCarError] = useState(false);
-  const [boardError, setBoardError] = useState(false);
-  const [modelError, setModelError] = useState(false);
-  const [modelYearError, setModelYearError] = useState(false);
-  const [colorError, setColorError] = useState(false);
-  const [doorsError, setDoorsError] = useState(false);
-  const [transmissionError, setTransmissionError] = useState(false);
-  const [loadingCreate, setLoadingCreate] = useState(false);
-
-  const { user } = useAuth();
-  const theme = useTheme();
-
-  const handleCreate = async () => {
-    setLoadingCreate(true);
-    if (typeCar.code === "default") {
-      setTypeCarError(true);
-      return;
-    }
-    if (board.code === "default") {
-      setBoardError(true);
-      return;
-    }
-    if (modelCar.code === "default") {
-      setModelError(true);
-      return;
-    }
-    if (yearModel.code === "default") {
-      setModelYearError(true);
-      return;
-    }
-    if (color.code === "default") {
-      setColorError(true);
-      return;
-    }
-
-    if (
-      typeCar.code === "default" ||
-      board.code === "default" ||
-      modelCar.code === "default" ||
-      yearModel.code === "default" ||
-      color.code === "default" ||
-      price === 0 ||
-      plate === "" ||
-      km === "" ||
-      cep === "" ||
-      valueDoors.code === "default" ||
-      transmissionType.code === "default"
-    ) {
-      Alert.alert("Preencha os campos corretamente");
-      return;
-    }
-
-    const formData = new FormData();
-
-    arrayImages.forEach((image: any) =>
-      formData.append("image-create", {
-        type: "image/jpeg",
-        // @ts-ignore
-        name: image.fileName,
-        // @ts-ignore
-        uri: image.uri,
-      })
-    );
-
-    formData.append("user_id", user.id);
-    formData.append("cep", cep.toString());
-    formData.append("type", typeCar.name);
-    formData.append("type_value", typeCar.code);
-    formData.append("board", board.name);
-    formData.append("board_value", board.code);
-    formData.append("model", modelCar.name);
-    formData.append("model_value", modelCar.code);
-    formData.append("year_model", yearModel.name);
-    formData.append("year_model_value", yearModel.code);
-    formData.append("color", color.name);
-    formData.append("price", (price / 100).toString());
-    formData.append("plate", plate.toString());
-    formData.append("mileage", km.toString());
-    formData.append("doors", valueDoors.code);
-    formData.append("transmission", transmissionType.code);
-    formData.append("description", description);
-
-    try {
-      const { data } = await axios.post(urlAPI, formData);
-      if (data.code === "ATPLAN") {
-        Alert.alert(data.message);
-        navigation.navigate("signatures");
-        setLoadingCreate(false);
-      }
-      handleReset();
-      setLoadingCreate(false);
-      navigation.navigate("myAds");
-    } catch (err) {
-      setLoadingCreate(false);
-      console.log(err);
-    }
-  };
-
-  const handleReset = () => {
-    setTypeCar({
-      code: "default",
-      name: "Selecione",
-    });
-    setBoard({
-      code: "default",
-      name: "Selecione",
-    });
-    setModelCar({
-      code: "default",
-      name: "Selecione",
-    });
-    setYearModel({
-      code: "default",
-      name: "Selecione",
-    });
-    setColor({
-      code: "default",
-      name: "Selecione",
-    });
-    setValueDoors({
-      code: "default",
-      name: "Selecione",
-    });
-    setTransmissionType({
-      code: "default",
-      name: "Selecione",
-    });
-    setPrice("");
-    setPlate("");
-    setKm("");
-    setDescription("");
-    setCep("");
-    setArrayImages([]);
-  };
-
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const handleBrands = async () => {
@@ -381,6 +251,154 @@ export function InsertAd() {
     handleModels();
   }, [modelCar.code]);
 
+  useEffect(() => {
+    const getOptionals = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:3333/optionals");
+        setOptionals(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getOptionals();
+  }, []);
+
+  const handleOpenTypeCar = () => setOpenTypeCar(!openTypeCar);
+  const handleOpenBoard = () => setOpenBoard(!openBoard);
+  const handleOpenModel = () => setOpenModel(!openModel);
+  const handleOpenYearModel = () => setOpenYearModel(!openYearModel);
+  const handleOpenModalDoors = () => setOpenModalDoors(!openModalDoors);
+  const handleOpenTransmissionType = () =>
+    setOpenTransmissionType(!openTransmissionType);
+  const handleOpenColor = () => setOpenColor(!openColor);
+  const handleOpenOptionals = () => setOpenOptionals(!openOptionals);
+
+  const handleCreate = async () => {
+    setLoadingCreate(true);
+    if (typeCar.code === "default") {
+      setTypeCarError(true);
+      return;
+    }
+    if (board.code === "default") {
+      setBoardError(true);
+      return;
+    }
+    if (modelCar.code === "default") {
+      setModelError(true);
+      return;
+    }
+    if (yearModel.code === "default") {
+      setModelYearError(true);
+      return;
+    }
+    if (color.code === "default") {
+      setColorError(true);
+      return;
+    }
+
+    if (
+      typeCar.code === "default" ||
+      board.code === "default" ||
+      modelCar.code === "default" ||
+      yearModel.code === "default" ||
+      color.code === "default" ||
+      price === 0 ||
+      plate === "" ||
+      km === "" ||
+      cep === "" ||
+      valueDoors.code === "default" ||
+      transmissionType.code === "default"
+    ) {
+      Alert.alert("Preencha os campos corretamente");
+      return;
+    }
+
+    const formData = new FormData();
+
+    arrayImages.forEach((image: any) =>
+      formData.append("image-create", {
+        type: "image/jpeg",
+        // @ts-ignore
+        name: image.fileName,
+        // @ts-ignore
+        uri: image.uri,
+      })
+    );
+
+    formData.append("user_id", user.id);
+    formData.append("cep", cep.toString());
+    formData.append("type", typeCar.name);
+    formData.append("type_value", typeCar.code);
+    formData.append("board", board.name);
+    formData.append("board_value", board.code);
+    formData.append("model", modelCar.name);
+    formData.append("model_value", modelCar.code);
+    formData.append("year_model", yearModel.name);
+    formData.append("year_model_value", yearModel.code);
+    formData.append("color", color.name);
+    formData.append("price", (price / 100).toString());
+    formData.append("plate", plate.toString());
+    formData.append("mileage", km.toString());
+    formData.append("doors", valueDoors.code);
+    formData.append("transmission", transmissionType.code);
+    formData.append("description", description);
+
+    formData.append(`optionals`, JSON.stringify(opt));
+
+    try {
+      const { data } = await axios.post(urlAPI, formData);
+      if (data.code === "ATPLAN") {
+        Alert.alert(data.message);
+        navigation.navigate("signatures");
+        setLoadingCreate(false);
+      }
+      handleReset();
+      setLoadingCreate(false);
+      navigation.navigate("myAds");
+    } catch (err) {
+      setLoadingCreate(false);
+      console.log(err);
+    }
+  };
+
+  const handleReset = () => {
+    setTypeCar({
+      code: "default",
+      name: "Selecione",
+    });
+    setBoard({
+      code: "default",
+      name: "Selecione",
+    });
+    setModelCar({
+      code: "default",
+      name: "Selecione",
+    });
+    setYearModel({
+      code: "default",
+      name: "Selecione",
+    });
+    setColor({
+      code: "default",
+      name: "Selecione",
+    });
+    setValueDoors({
+      code: "default",
+      name: "Selecione",
+    });
+    setTransmissionType({
+      code: "default",
+      name: "Selecione",
+    });
+    setPrice("");
+    setPlate("");
+    setKm("");
+    setDescription("");
+    setCep("");
+    setArrayImages([]);
+  };
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     wait(1000).then(() => setRefreshing(false));
@@ -460,7 +478,11 @@ export function InsertAd() {
             keyExtractor={(item: any) => item.assetId}
             horizontal
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              <RefreshControl
+                tintColor={theme.colors.primary}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
             }
             ItemSeparatorComponent={() => <Separator />}
             renderItem={({ item, index }: any) => (
@@ -485,7 +507,15 @@ export function InsertAd() {
                     <ButtonModal
                       onPress={() => handleChangePosition(valueIndex, 0)}
                     >
-                      <Text>Adicionar como foto principal</Text>
+                      <Text
+                        style={{
+                          color: theme.colors.text,
+                          fontSize: 16,
+                          fontWeight: "600",
+                        }}
+                      >
+                        Adicionar como foto principal
+                      </Text>
                     </ButtonModal>
                     <ButtonModal onPress={() => handleRemovePhoto(valueIndex)}>
                       <TextRemove>Remover imagem</TextRemove>
@@ -675,11 +705,34 @@ export function InsertAd() {
             />
           </ContentButtonSelect>
 
+          <ContentButtonSelect elevation={10}>
+            <View style={{ width: "100%", paddingLeft: 20 }}>
+              <TitleSelect>Selecione os opcionais</TitleSelect>
+            </View>
+            <ButtonSelect
+              title="Selecione"
+              items={opt}
+              onPress={handleOpenOptionals}
+            />
+          </ContentButtonSelect>
+
           <Button
             title="Cadastrar anúncio"
             onPress={handleCreate}
             disabled={loadingCreate && true}
           />
+
+          <Modal visible={openOptionals} animationType="slide">
+            <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
+              <ModalOptionals
+                loading={loading}
+                dataItems={optionals}
+                value={opt}
+                changeValue={setOpt}
+                changeModal={handleOpenOptionals}
+              />
+            </GestureHandlerRootView>
+          </Modal>
 
           <Modal visible={openTypeCar} animationType="slide">
             <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>

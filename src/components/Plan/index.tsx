@@ -38,6 +38,7 @@ interface PlanProps {
   borderColor?: string;
   lookUpKey: string;
   features: Array<featuresProps>;
+  active?: boolean;
 }
 
 const shadowContent = {
@@ -127,12 +128,19 @@ export function Plan({ ...props }: PlanProps) {
             paddingRight: 10,
           }}
         >
-          <Text>
-            Para contratar outro plano voce primeiramente deve cancelar seu
-            plano atual
+          <Text
+            style={{
+              fontFamily: theme.fonts.medium,
+              textAlign: "center",
+              fontSize: 14,
+              marginBottom: 30,
+            }}
+          >
+            Vimos que você já possui um plano com a gente, vá até suas
+            assinaturas e faça um upgrade!
           </Text>
           <Button
-            title="Gerenciar assinaturas"
+            title="Me leve até lá"
             onPress={() => {
               handleModal();
               navigation.navigate("signatures");

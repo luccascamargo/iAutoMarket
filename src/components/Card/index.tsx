@@ -1,4 +1,6 @@
-import { View } from "react-native";
+import { Spinner } from "native-base";
+import { Image, View } from "react-native";
+import { useTheme } from "styled-components";
 import {
   Container,
   ImageCard,
@@ -23,9 +25,14 @@ const shadowContent = {
 };
 
 export function Card({ data, children, ...props }: any) {
+  const theme = useTheme();
   return (
     <Container {...props} style={shadowContent}>
       <ImageCard
+        onError={() => (
+          <Image source={require("../../assets/image-default.jpg")} />
+        )}
+        onLoad={() => <Spinner size={"lg"} color={theme.colors.primary} />}
         source={{
           uri: `${data?.photos[0]?.uri}`,
         }}

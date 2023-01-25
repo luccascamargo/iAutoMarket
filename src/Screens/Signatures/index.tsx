@@ -90,8 +90,8 @@ export function Signatures() {
       </ContentHeader>
       <Content>
         <Description>
-          Aqui você poderá gerenciar sua assinatura assim como alterar forma de
-          pagamentos e muito mais.
+          Aqui você poderá gerenciar sua assinatura assim como alterar plano,
+          forma de pagamentos e muito mais.
         </Description>
         <Button
           title="Gerencie"

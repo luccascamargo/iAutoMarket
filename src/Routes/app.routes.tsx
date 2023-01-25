@@ -20,6 +20,7 @@ import { Signatures } from "../Screens/Signatures";
 import { ForgotPassword } from "../Screens/ForgotPassword";
 import { Signature } from "../Screens/Signature";
 import { CreatePhone } from "../Screens/CreatePhone";
+import { AdDetails } from "../Screens/AdDetails";
 
 const { Navigator, Screen } = createBottomTabNavigator();
 const Routes = createNativeStackNavigator();
@@ -48,6 +49,7 @@ export function RoutesApp() {
         <Routes.Screen name="favorites" component={Favorites} />
         <Routes.Screen name="editAdvert" component={ModalEdit} />
         <Routes.Screen name="signatures" component={Signatures} />
+        <Routes.Screen name="advert" component={AdDetails} />
         <Routes.Screen name="signature" component={Signature} />
         <Routes.Screen name="myAds" component={MyAds} />
         <Routes.Screen

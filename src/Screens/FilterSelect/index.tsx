@@ -39,6 +39,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components";
 import { createURL } from "expo-linking";
+import { ModalOptionals } from "../../components/ModalOptionals";
 
 const shadowContent = {
   shadowColor: "#000",
@@ -55,6 +56,7 @@ const urlAPI =
 const width = Dimensions.get("screen").width;
 
 export function FilterSelect() {
+  const [listYearModel, setListYearModel] = useState([]);
   const [minMileage, setMinMileage] = useState("Selecione");
   const [maxMileage, setMaxMileage] = useState("Selecione");
   const [minPrice, setMinPrice] = useState("Selecione");
@@ -83,6 +85,11 @@ export function FilterSelect() {
     name: "Selecione",
   });
 
+  const [yearModel, setYearModel] = useState({
+    code: "default",
+    name: "Selecione",
+  });
+
   const [valueDoors, setValueDoors] = useState({
     code: "default",
     name: "Selecione",
@@ -98,13 +105,18 @@ export function FilterSelect() {
     name: "Selecione",
   });
 
+  const [opt, setOpt] = useState([]);
   const [openTypeCar, setOpenTypeCar] = useState(false);
   const [openBoard, setOpenBoard] = useState(false);
+  const [optionals, setOptionals] = useState([]);
+  const [openOptionals, setOpenOptionals] = useState(false);
   const [openModel, setOpenModel] = useState(false);
   const [openModalDoors, setOpenModalDoors] = useState(false);
   const [openTransmissionType, setOpenTransmissionType] = useState(false);
+  const [openYearModel, setOpenYearModel] = useState(false);
   const [openColor, setOpenColor] = useState(false);
   const [openCity, setOpenCity] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState("Data");
 
   const handleOpenTypeCar = () => setOpenTypeCar(!openTypeCar);
@@ -112,9 +124,11 @@ export function FilterSelect() {
   const handleOpenBoard = () => setOpenBoard(!openBoard);
   const handleOpenModel = () => setOpenModel(!openModel);
   const handleOpenModalDoors = () => setOpenModalDoors(!openModalDoors);
+  const handleOpenYearModel = () => setOpenYearModel(!openYearModel);
   const handleOpenTransmissionType = () =>
     setOpenTransmissionType(!openTransmissionType);
   const handleOpenColor = () => setOpenColor(!openColor);
+  const handleOpenOptionals = () => setOpenOptionals(!openOptionals);
 
   const navigation = useNavigation();
   const theme = useTheme();
@@ -199,75 +213,144 @@ export function FilterSelect() {
 
   useEffect(() => {
     const FormatCity = async () => {
-      let result: any = [];
-      const citiesFormatted: any = [];
-      await axios
-        .get(
-          "https://servicodados.ibge.gov.br/api/v1/localidades/estados/43/municipios"
-        )
-        .then((response) => {
-          result = response.data;
-        })
-        .catch((err) => console.log(err));
+      try {
+        setLoading(true);
+        let result: any = [];
+        const citiesFormatted: any = [];
+        await axios
+          .get(
+            "https://servicodados.ibge.gov.br/api/v1/localidades/estados/43/municipios"
+          )
+          .then((response) => {
+            result = response.data;
+          })
+          .catch((err) => console.log(err));
 
-      result?.map((city: any) => {
-        citiesFormatted.push({
-          code: city.id,
-          name: city.nome,
+        result?.map((city: any) => {
+          citiesFormatted.push({
+            code: city.id,
+            name: city.nome,
+          });
         });
-      });
 
-      setCities(citiesFormatted);
+        setCities(citiesFormatted);
+        setLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
     };
     FormatCity();
   }, []);
 
   useEffect(() => {
-    if (typeCar.code !== "default") {
-      const config = {
-        method: "get",
-        url: `https://parallelum.com.br/fipe/api/v2/${typeCar.name.toLowerCase()}/brands`,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+    const handleBrands = async () => {
+      if (typeCar.code === "default") {
+        return;
+      }
+      try {
+        setLoading(true);
+        const config = {
+          method: "get",
+          url: `https://parallelum.com.br/fipe/api/v2/${typeCar.name.toLowerCase()}/brands`,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
 
-      axios(config)
-        .then((response) => {
-          setBoards(response.data);
-        })
-        .catch((error) => console.log(error, "API Marcas"));
+        const result = await axios(config);
 
-      setBoard({
-        code: "default",
-        name: "Selecione",
-      });
-    }
+        setBoards(result.data);
+
+        setBoard({
+          code: "default",
+          name: "Selecione",
+        });
+        setLoading(false);
+      } catch (err) {
+        console.log(err);
+        console.log("Erro api ano marcas");
+      }
+    };
+    handleBrands();
   }, [typeCar.code]);
 
   useEffect(() => {
-    if (board.code !== "default") {
-      const config = {
-        method: "get",
-        url: `https://parallelum.com.br/fipe/api/v2/${typeCar.name.toLowerCase()}/brands/${
-          board.code
-        }/models`,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
+    const handleBoards = async () => {
+      if (board.code === "default") {
+        return;
+      }
+      try {
+        setLoading(true);
+        const config = {
+          method: "get",
+          url: `https://parallelum.com.br/fipe/api/v2/${typeCar.name.toLowerCase()}/brands/${
+            board.code
+          }/models`,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
 
-      axios(config)
-        .then((response) => {
-          setModels(response.data);
-        })
-        .catch((err) => console.log(err, "API Modelos"));
-      setModelCar({
-        code: "default",
-        name: "Selecione",
-      });
-    }
+        const result = await axios(config);
+        setModels(result.data);
+        setModelCar({
+          code: "default",
+          name: "Selecione",
+        });
+        setLoading(false);
+      } catch (err) {
+        console.log(err);
+        console.log("Erro api models");
+      }
+    };
+    handleBoards();
   }, [board.code]);
+
+  useEffect(() => {
+    const handleModels = async () => {
+      if (modelCar.code === "default") {
+        return;
+      }
+      try {
+        setLoading(true);
+        const config = {
+          method: "get",
+          url: `https://parallelum.com.br/fipe/api/v2/${typeCar.name.toLowerCase()}/brands/${
+            board.code
+          }/models/${modelCar.code}/years`,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        };
+
+        const result = await axios(config);
+        setListYearModel(result.data);
+
+        setYearModel({
+          code: "default",
+          name: "Selecione",
+        });
+        setLoading(false);
+      } catch (err) {
+        console.log(err);
+        console.log("Erro api ano modelo");
+      }
+    };
+    handleModels();
+  }, [modelCar.code]);
+
+  useEffect(() => {
+    const getOptionals = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:3333/optionals");
+        setOptionals(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getOptionals();
+  }, []);
 
   const [isLoading, setIsLoading] = useState(false);
   const [openModalKm, setOpenModalKm] = useState(false);
@@ -294,7 +377,7 @@ export function FilterSelect() {
   if (isLoading) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
   }
@@ -328,7 +411,7 @@ export function FilterSelect() {
           </ContentButtonSelect>
           {typeCar.code != "default" && (
             <>
-              <ContentButtonSelect>
+              <ContentButtonSelect elevation={10}>
                 <View style={{ width: "100%", paddingLeft: 20 }}>
                   <TitleSelect>Selecione a marca</TitleSelect>
                 </View>
@@ -341,7 +424,7 @@ export function FilterSelect() {
                 />
               </ContentButtonSelect>
               {board.code != "default" && (
-                <ContentButtonSelect>
+                <ContentButtonSelect elevation={10}>
                   <View style={{ width: "100%", paddingLeft: 20 }}>
                     <TitleSelect>Selecione o modelo</TitleSelect>
                   </View>
@@ -351,6 +434,17 @@ export function FilterSelect() {
                       modelCar.name.substring(1).toLocaleLowerCase()
                     }
                     onPress={handleOpenModel}
+                  />
+                </ContentButtonSelect>
+              )}
+              {modelCar.code != "default" && (
+                <ContentButtonSelect elevation={10}>
+                  <View style={{ width: "100%", paddingLeft: 20 }}>
+                    <TitleSelect>Selecione o ano modelo</TitleSelect>
+                  </View>
+                  <ButtonSelect
+                    title={yearModel.name}
+                    onPress={handleOpenYearModel}
                   />
                 </ContentButtonSelect>
               )}
@@ -434,6 +528,17 @@ export function FilterSelect() {
             <ButtonSelect
               title={transmissionType.name}
               onPress={handleOpenTransmissionType}
+            />
+          </ContentButtonSelect>
+
+          <ContentButtonSelect elevation={10}>
+            <View style={{ width: "100%", paddingLeft: 20 }}>
+              <TitleSelect>Selecione os opcionais</TitleSelect>
+            </View>
+            <ButtonSelect
+              title="Selecione"
+              items={opt}
+              onPress={handleOpenOptionals}
             />
           </ContentButtonSelect>
 
@@ -649,6 +754,7 @@ export function FilterSelect() {
           <Modal visible={openCity} animationType="slide">
             <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
               <ModalSelect
+                loading={loading}
                 dataItems={cities}
                 value={city}
                 changeValue={setCity}
@@ -657,9 +763,34 @@ export function FilterSelect() {
             </GestureHandlerRootView>
           </Modal>
 
+          <Modal visible={openOptionals} animationType="slide">
+            <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
+              <ModalOptionals
+                loading={loading}
+                dataItems={optionals}
+                value={opt}
+                changeValue={setOpt}
+                changeModal={handleOpenOptionals}
+              />
+            </GestureHandlerRootView>
+          </Modal>
+
+          <Modal visible={openYearModel} animationType="slide">
+            <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
+              <ModalSelect
+                dataItems={listYearModel}
+                value={yearModel}
+                loading={loading}
+                changeValue={setYearModel}
+                changeModal={handleOpenYearModel}
+              />
+            </GestureHandlerRootView>
+          </Modal>
+
           <Modal visible={openTypeCar} animationType="slide">
             <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
               <ModalSelect
+                loading={loading}
                 dataItems={typeCars}
                 value={typeCar}
                 changeValue={setTypeCar}
@@ -671,6 +802,7 @@ export function FilterSelect() {
           <Modal visible={openBoard} animationType="slide">
             <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
               <ModalSelect
+                loading={loading}
                 dataItems={boards}
                 value={board}
                 changeValue={setBoard}
@@ -682,6 +814,7 @@ export function FilterSelect() {
           <Modal visible={openModel} animationType="slide">
             <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
               <ModalSelect
+                loading={loading}
                 dataItems={models}
                 value={modelCar}
                 changeValue={setModelCar}

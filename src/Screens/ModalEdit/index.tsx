@@ -263,7 +263,11 @@ export function ModalEdit({ route, navigation }: any) {
             data={arrayImages}
             keyExtractor={(item) => item.id}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              <RefreshControl
+                tintColor={theme.colors.primary}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
             }
             horizontal
             ItemSeparatorComponent={() => <Separator />}
@@ -288,7 +292,15 @@ export function ModalEdit({ route, navigation }: any) {
                     <ButtonModal
                       onPress={() => handleChangePosition(valueIndex, 0)}
                     >
-                      <Text>Adicionar como foto principal</Text>
+                      <Text
+                        style={{
+                          color: theme.colors.text,
+                          fontSize: 16,
+                          fontWeight: "600",
+                        }}
+                      >
+                        Adicionar como foto principal
+                      </Text>
                     </ButtonModal>
                     <ButtonModal onPress={() => handleRemovePhoto(valueIndex)}>
                       <TextRemove>Remover imagem</TextRemove>

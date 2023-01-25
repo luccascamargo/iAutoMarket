@@ -37,6 +37,7 @@ import {
   TitleDescription,
   FeaturesTitle,
   ContentFeatures,
+  OptionalTitle,
 } from "./styles";
 import axios from "axios";
 import { Spinner } from "native-base";
@@ -148,6 +149,12 @@ export function CardInternal({ data }) {
                 onPress={() => handleOpenGallery(index)}
               >
                 <Image
+                  onError={() => (
+                    <Image source={require("../../assets/image-default.jpg")} />
+                  )}
+                  onLoad={() => (
+                    <Spinner size={"lg"} color={theme.colors.primary} />
+                  )}
                   style={{ width: width, height: "100%" }}
                   source={{ uri: photo.uri }}
                 />
@@ -228,13 +235,32 @@ export function CardInternal({ data }) {
       </MainFeatures>
       <Line />
 
-      <ContentDescription>
-        <TitleDescription>Descrição</TitleDescription>
-        <Description>
-          Alguma cois aqui sobre o carro que possa ser usado como descricao para
-          este anuncio alguma coisa para dizer oq o carro possui{" "}
-        </Description>
-      </ContentDescription>
+      {data?.description && (
+        <ContentDescription>
+          <TitleDescription>Descrição</TitleDescription>
+          <Description>{data?.description}</Description>
+        </ContentDescription>
+      )}
+
+      <Line />
+
+      <MainFeatures>
+        <FeaturesTitle>Opcionais</FeaturesTitle>
+        <ContentFeatures>
+          {data?.optionals.length === 0 ? (
+            <Feature>
+              <OptionalTitle>Nenhum opcional listado</OptionalTitle>
+            </Feature>
+          ) : (
+            data?.optionals.map((optional) => (
+              <Feature>
+                <OptionalTitle>{optional.name}</OptionalTitle>
+              </Feature>
+            ))
+          )}
+          {}
+        </ContentFeatures>
+      </MainFeatures>
 
       {/* <ContentFipe>
         <TitleFipe>Tabela Fipe</TitleFipe>

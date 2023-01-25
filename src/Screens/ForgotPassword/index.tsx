@@ -52,6 +52,7 @@ export function ForgotPassword({ route }) {
 
             <Input
               placeholder="Nova senha"
+              secureTextEntry
               value={newPass}
               onChangeText={(event) => setNewPass(event)}
             />

@@ -136,10 +136,12 @@ export const ButtonCancel = styled.TouchableOpacity`
 `;
 
 export const TextRemove = styled.Text`
-  font-family: ${({ theme }) => theme.fonts.regular};
+  font-family: ${({ theme }) => theme.fonts.medium};
   color: red;
 `;
 
 export const TextModal = styled.Text`
-  font-family: ${({ theme }) => theme.fonts.regular};
+  font-family: ${({ theme }) => theme.fonts.medium};
+  font-size: ${RFValue(11)}px;
+  color: ${({ theme }) => theme.colors.text};
 `;

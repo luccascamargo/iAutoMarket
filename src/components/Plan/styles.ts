@@ -7,10 +7,7 @@ interface PlanProps {
   color: string;
   borderColor?: string;
   disable?: boolean;
-}
-
-interface ButtonProps {
-  onClick?: () => any;
+  active?: boolean;
 }
 
 export const Container = styled.View<PlanProps>`
@@ -21,6 +18,9 @@ export const Container = styled.View<PlanProps>`
   margin-top: ${RFValue(16)}px;
 
   padding: ${RFValue(20)}px;
+
+  border-width: ${RFValue(1)}px;
+  border-radius: ${RFValue(10)}px;
 `;
 
 export const ButtonSubscription = styled.TouchableOpacity`

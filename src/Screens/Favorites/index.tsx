@@ -27,10 +27,12 @@ import {
   View,
 } from "react-native";
 import { useCallback, useEffect, useState } from "react";
-import { AdDetails } from "../../components/AdDetails";
+import { AdDetails } from "../AdDetails";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useTheme } from "styled-components";
+import { useNavigation } from "@react-navigation/native";
 
 const shadowContent = {
   shadowColor: "#000",
@@ -43,18 +45,21 @@ const wait = (timeout: number) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 };
 
-export function Favorites({ navigation }: any) {
+export function Favorites() {
   const dataKey = "@serramotors:advert";
-  const [openModal, setOpenModal] = useState(false);
   const [cardInfos, setCardInfos] = useState<any>({});
   const [advertsFavorites, setAdvertsFavorites] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isVisibleModalOptions, setIsVisibleModalOptions] = useState(false);
 
+  const navigation = useNavigation();
+  const theme = useTheme();
+
   const handleOpenAd = () => {
     setIsVisibleModalOptions(false);
-    setOpenModal(true);
+
+    navigation.navigate("advert", { dataItem: cardInfos });
   };
 
   const onRefresh = useCallback(() => {
@@ -123,7 +128,11 @@ export function Favorites({ navigation }: any) {
           data={advertsFavorites}
           keyExtractor={(item: any) => item.id}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl
+              tintColor={theme.colors.primary}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
           }
           renderItem={({ item }: any) => (
             <Card
@@ -145,10 +154,6 @@ export function Favorites({ navigation }: any) {
           <Icon2 name="arrowdown" />
         </ContentMessage>
       )}
-
-      <Modal visible={openModal} animationType="slide">
-        <AdDetails setOpenModal={setOpenModal} data={cardInfos} />
-      </Modal>
 
       <Modal visible={isVisibleModalOptions} transparent>
         <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>

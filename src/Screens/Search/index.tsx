@@ -2,7 +2,7 @@ import { Text } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useState } from "react";
 import { Modal } from "react-native";
-import { AdDetails } from "../../components/AdDetails";
+import { AdDetails } from "../AdDetails";
 import { Card } from "../../components/Card";
 import {
   ContentHeader,
@@ -93,7 +93,12 @@ export function Search({ route }) {
           data={adverts}
           keyExtractor={(item: any) => item.id}
           renderItem={({ item }: any) => (
-            <Card data={item} onPress={() => handleOpenAd(item)} />
+            <Card
+              data={item}
+              onPress={() => {
+                navigation.navigate("advert", { dataItem: item });
+              }}
+            />
           )}
         />
       ) : (

@@ -8,6 +8,7 @@ export const Container = styled(TextInput)`
   padding: 15px;
 
   font-size: ${RFValue(13)}px;
+  font-family: ${({ theme }) => theme.fonts.medium};
 
   border-radius: 5px;
 

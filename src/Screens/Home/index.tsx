@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity } from "react-native";
+import { ScrollView, Text, TouchableOpacity } from "react-native";
 
 import {
   Container,
@@ -167,90 +167,97 @@ export function Home() {
         </ContentInfos>
       </ContentHeader>
 
-      <Title>O que deseja fazer?</Title>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Title>O que deseja fazer?</Title>
 
-      <ContentBox>
-        <Box
-          style={shadowContent}
-          //@ts-ignore
-          elevation={10}
-          onPress={() => {
-            user ? navigation.navigate("myAds") : navigation.navigate("login");
-          }}
-        >
-          <Icon name="car" color={theme.colors.primary} />
-          <BoxTitle>Meus</BoxTitle>
-          <BoxTitleTwo>anúncios</BoxTitleTwo>
-        </Box>
-        <Box
-          //@ts-ignore
-          elevation={10}
-          style={shadowContent}
-          onPress={() => navigation.navigate("search")}
-        >
-          <Icon name="search1" color={theme.colors.primary} />
-          <BoxTitle>Buscar</BoxTitle>
-          <BoxTitleTwo>anúncios</BoxTitleTwo>
-        </Box>
-        <Box
-          //@ts-ignore
-          elevation={10}
-          style={shadowContent}
-          onPress={() => navigation.navigate("favorites")}
-        >
-          <Icon name="hearto" color={theme.colors.primary} />
-          <BoxTitle>Meus</BoxTitle>
-          <BoxTitleTwo>Favoritos</BoxTitleTwo>
-        </Box>
-        <Box
-          //@ts-ignore
-          elevation={10}
-          style={shadowContent}
-          onPress={() => {
-            user
-              ? navigation.navigate("insertAd")
-              : navigation.navigate("login");
-          }}
-        >
-          <Icon name="form" color={theme.colors.primary} />
-          <BoxTitle>Quero</BoxTitle>
-          <BoxTitleTwo>anunciar</BoxTitleTwo>
-        </Box>
-      </ContentBox>
+        <ContentBox>
+          <Box
+            style={shadowContent}
+            //@ts-ignore
+            elevation={10}
+            onPress={() => {
+              user
+                ? navigation.navigate("myAds")
+                : navigation.navigate("login");
+            }}
+          >
+            <Icon name="car" color={theme.colors.primary} />
+            <BoxTitle>Meus</BoxTitle>
+            <BoxTitleTwo>anúncios</BoxTitleTwo>
+          </Box>
+          <Box
+            //@ts-ignore
+            elevation={10}
+            style={shadowContent}
+            onPress={() => navigation.navigate("search")}
+          >
+            <Icon name="search1" color={theme.colors.primary} />
+            <BoxTitle>Buscar</BoxTitle>
+            <BoxTitleTwo>anúncios</BoxTitleTwo>
+          </Box>
+          <Box
+            //@ts-ignore
+            elevation={10}
+            style={shadowContent}
+            onPress={() => navigation.navigate("favorites")}
+          >
+            <Icon name="hearto" color={theme.colors.primary} />
+            <BoxTitle>Meus</BoxTitle>
+            <BoxTitleTwo>Favoritos</BoxTitleTwo>
+          </Box>
+          <Box
+            //@ts-ignore
+            elevation={10}
+            style={shadowContent}
+            onPress={() => {
+              user
+                ? navigation.navigate("insertAd")
+                : navigation.navigate("login");
+            }}
+          >
+            <Icon name="form" color={theme.colors.primary} />
+            <BoxTitle>Quero</BoxTitle>
+            <BoxTitleTwo>anunciar</BoxTitleTwo>
+          </Box>
+        </ContentBox>
 
-      <ContentPlans>
-        <TitlePlans>Nossos planos</TitlePlans>
-        <Plan
-          background={theme.colors.white}
-          color={theme.colors.text}
-          price="R$14,97"
-          title="Silver"
-          subTitle="Para vendedores ocasionais"
-          features={featuresEco}
-          lookUpKey="price_1MEJNVB3rHMTUjVLfaCFAZgz"
-        />
+        <ContentPlans>
+          <TitlePlans>Nossos planos</TitlePlans>
+          <Plan
+            background={theme.colors.white}
+            color={theme.colors.text}
+            borderColor={theme.colors.background}
+            price="R$14,97"
+            title="Silver"
+            subTitle="Para vendedores ocasionais"
+            features={featuresEco}
+            lookUpKey="price_1MEJNVB3rHMTUjVLfaCFAZgz"
+          />
 
-        <Plan
-          background={theme.colors.white}
-          color={theme.colors.text}
-          price="R$39,97"
-          title="Gold"
-          subTitle="Para pequenos logistas"
-          features={featuresBasic}
-          lookUpKey="price_1MEJLsB3rHMTUjVLONIaE6Wm"
-        />
+          <Plan
+            background={theme.colors.white}
+            color={theme.colors.text}
+            borderColor={theme.colors.background}
+            price="R$39,97"
+            title="Gold"
+            subTitle="Para pequenos logistas"
+            features={featuresBasic}
+            lookUpKey="price_1MEJLsB3rHMTUjVLONIaE6Wm"
+          />
 
-        <Plan
-          background={theme.colors.white}
-          color={theme.colors.text}
-          borderColor={theme.colors.primary}
-          price="R$249,97"
-          title="Platinum"
-          subTitle="Para grandes logistas"
-          features={featuresPro}
-          lookUpKey="price_1MEJN4B3rHMTUjVLvNH9ZigW"
-        />
-      </ContentPlans>
+          <Plan
+            background={theme.colors.white}
+            color={theme.colors.text}
+            borderColor={theme.colors.primary}
+            price="R$249,97"
+            title="Platinum"
+            subTitle="Para grandes logistas"
+            features={featuresPro}
+            lookUpKey="price_1MEJN4B3rHMTUjVLvNH9ZigW"
+            active
+          />
+        </ContentPlans>
+      </ScrollView>
     </Container>
   );
 }
