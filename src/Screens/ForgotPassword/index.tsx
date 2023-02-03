@@ -17,18 +17,22 @@ export function ForgotPassword({ route }) {
   const [inputEmail, setInputEmail] = useState(email);
   const [code, setCode] = useState(null);
   const [newPass, setNewPass] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation();
 
   const handleReset = async () => {
-    Auth.forgotPasswordSubmit(email, code, newPass)
-      .then((data) => {
-        Alert.alert("Senha alterada com sucesso!");
-        navigation.navigate("login");
-      })
-      .catch((err) => {
-        Alert.alert("Algo de errado aconteceu, tenta novamente mais tarde");
-      });
+    try {
+      setLoading(true);
+      await Auth.forgotPasswordSubmit(email, code, newPass);
+      Alert.alert("Senha alterada com sucesso!");
+      navigation.navigate("login");
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Algo de errado aconteceu, tenta novamente mais tarde");
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,7 +61,11 @@ export function ForgotPassword({ route }) {
               onChangeText={(event) => setNewPass(event)}
             />
 
-            <Button title="Redefinir" onPress={handleReset} />
+            <Button
+              title="Redefinir"
+              onPress={handleReset}
+              disabled={loading && true}
+            />
           </ContentLogin>
         </ContentInfos>
       </Container>

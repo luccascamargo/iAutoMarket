@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-
+import { AntDesign } from "@expo/vector-icons";
 import {
   ContentHeader,
   Icon,
@@ -34,6 +34,7 @@ import { useTheme } from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { Spinner } from "native-base";
+import { api } from "../../services/api";
 
 const width = Dimensions.get("screen").width;
 
@@ -115,8 +116,8 @@ export function MyAds() {
   }, [refreshing]);
 
   const handleDeleteAdvert = async (id: string) => {
-    await axios
-      .delete(`${urlAPI}/delete-advert`, {
+    await api
+      .delete("delete-advert", {
         headers: {
           Accept: "application/json",
         },
@@ -128,6 +129,7 @@ export function MyAds() {
         Alert.alert("Anuncio excluido com sucesso");
         setOpenModalOptions(false);
         setOpenModalInactive(false);
+        setOpenModalRequested(false);
         onRefresh();
       })
       .catch((err) => console.log(err));
@@ -138,7 +140,11 @@ export function MyAds() {
 
     try {
       setLoading(true);
-      const { data } = await axios.put("http://localhost:3333/publish", {
+      const { data } = await api.put("publish", {
+        headers: {
+          "Content-type": "Application/json",
+          Accept: "Application/json",
+        },
         data: {
           id,
           user_id: user.id,
@@ -172,7 +178,9 @@ export function MyAds() {
   return (
     <Container>
       <ContentHeader>
-        <Icon name="arrowleft" onPress={navigation.goBack} />
+        <Icon onPress={navigation.goBack}>
+          <AntDesign name="arrowleft" size={32} color={theme.colors.primary} />
+        </Icon>
         <Title>Meus anúncios</Title>
       </ContentHeader>
 

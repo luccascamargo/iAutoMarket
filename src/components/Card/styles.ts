@@ -12,7 +12,7 @@ export const Container = styled(RectButton)`
 
   background-color: ${({ theme }) => theme.colors.background};
 
-  opacity: ${({ condition }) => (condition === "INACTIVE" ? 0.5 : 0)};
+  opacity: ${({ condition }) => (condition === "INACTIVE" ? 0.5 : 1)};
 `;
 
 export const ImageCard = styled.Image`

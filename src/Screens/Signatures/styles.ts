@@ -24,9 +24,7 @@ export const ContentHeader = styled.View`
   background-color: ${({ theme }) => theme.colors.background};
 `;
 
-export const Icon = styled(AntDesign)`
-  font-size: ${RFValue(25)}px;
-  color: ${({ theme }) => theme.colors.primary};
+export const Icon = styled.TouchableOpacity`
   position: absolute;
   left: ${RFValue(20)}px;
   bottom: ${RFValue(15)}px;
@@ -41,7 +39,7 @@ export const Title = styled.Text`
 export const Content = styled.View`
   align-items: center;
   margin-top: ${RFValue(20)}px;
-  padding: 0 ${RFValue(20)}px;
+  padding: 0 ${RFValue(10)}px;
   flex: 1;
 `;
 export const ListPlans = styled.FlatList.attrs({

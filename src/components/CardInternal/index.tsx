@@ -29,10 +29,6 @@ import {
   FeatureTitle,
   FeatureValue,
   IconFav,
-  ContentFipe,
-  TitleFipe,
-  PriceFipe,
-  TextMonth,
   ContentDescription,
   TitleDescription,
   FeaturesTitle,
@@ -47,9 +43,7 @@ const width = Dimensions.get("screen").width;
 
 export function CardInternal({ data }) {
   const [favorite, setFavorite] = useState(false);
-  const [history, setHistory] = useState<any>({});
   const [visible, setIsVisible] = useState(false);
-  const [historyLoading, setHistoryLoading] = useState(false);
   const [index, setIndex] = useState(0);
 
   const dataKey = "@serramotors:advert";
@@ -105,25 +99,6 @@ export function CardInternal({ data }) {
     setIndex(index);
     setIsVisible(true);
   };
-
-  useEffect(() => {
-    const getHistoryFipe = async () => {
-      const config = {
-        method: "get",
-        url: `https://parallelum.com.br/fipe/api/v2/cars/008221-0/years/2018/history`,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      };
-
-      await axios(config)
-        .then((response) => {
-          setHistory(response.data);
-        })
-        .catch((error) => console.log(error, "API history"));
-    };
-    getHistoryFipe();
-  }, []);
 
   return (
     <Container>
@@ -253,7 +228,7 @@ export function CardInternal({ data }) {
             </Feature>
           ) : (
             data?.optionals.map((optional) => (
-              <Feature>
+              <Feature key={optional.id}>
                 <OptionalTitle>{optional.name}</OptionalTitle>
               </Feature>
             ))
@@ -262,25 +237,21 @@ export function CardInternal({ data }) {
         </ContentFeatures>
       </MainFeatures>
 
-      {/* <ContentFipe>
-        <TitleFipe>Tabela Fipe</TitleFipe>
-        {history?.priceHistory?.map((history: any) => (
-          <View key={history.price}>
-            <PriceFipe>{history.price}</PriceFipe>
-            <TextMonth>{history.month}</TextMonth>
-          </View>
-        ))}
-      </ContentFipe> */}
-
       <View
         style={{
           width: "100%",
           alignItems: "center",
           justifyContent: "center",
+          marginTop: 60,
         }}
       >
         <Text
-          style={{ color: theme.colors.text, fontWeight: "400", marginTop: 20 }}
+          style={{
+            color: theme.colors.text,
+            fontWeight: "400",
+            textAlign: "center",
+            fontFamily: theme.fonts.medium,
+          }}
         >
           Anuncio criado em{" "}
           {new Date(data.created_at).toLocaleDateString("pt-BR", {

@@ -7,7 +7,7 @@ import styled from "styled-components/native";
 export const Container = styled.ScrollView.attrs({
   showsVerticalScrollIndicator: false,
   contentContainerStyle: {
-    paddingBottom: getBottomSpace() + 20,
+    paddingBottom: getBottomSpace() + 60,
   },
 })`
   width: 100%;

@@ -32,18 +32,10 @@ const shadowContent = {
 };
 
 export function Search({ route }) {
-  const [openModal, setOpenModal] = useState(false);
-  const [cardInfos, setCardInfos] = useState({});
-
   const theme = useTheme();
   const navigation = useNavigation();
   const { user } = useAuth();
   const { adverts } = route.params;
-
-  const handleOpenAd = (data: any) => {
-    setCardInfos(data);
-    setOpenModal(true);
-  };
 
   const handleModalLogin = () => {
     if (user) {
@@ -57,8 +49,8 @@ export function Search({ route }) {
     <Container>
       <ContentHeader style={shadowContent} elevation={10}>
         <ContentWrap>
-          <ContentFilters>
-            <IconFilter name="filter" onPress={() => navigation.goBack()} />
+          <ContentFilters onPress={() => navigation.goBack()}>
+            <IconFilter name="arrowleft" />
           </ContentFilters>
           {user ? (
             <RectButton
@@ -112,12 +104,6 @@ export function Search({ route }) {
           />
         </ContentMessage>
       )}
-
-      <Modal visible={openModal} animationType="slide">
-        <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
-          <AdDetails setOpenModal={setOpenModal} data={cardInfos} />
-        </GestureHandlerRootView>
-      </Modal>
     </Container>
   );
 }

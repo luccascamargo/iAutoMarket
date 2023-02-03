@@ -1,24 +1,23 @@
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
 import { useState } from "react";
-import { Alert, View } from "react-native";
+import { Alert, TouchableOpacity, View } from "react-native";
 import { Masks } from "react-native-mask-input";
 import { useTheme } from "styled-components";
-import { useAuth, UserAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { AntDesign } from "@expo/vector-icons";
 
 import { Button } from "../Button";
-import { Input } from "../Input";
 import {
   ContentHeader,
   Icon,
   Title,
   Container,
   ContentChangeUser,
-  TitleInput,
   ContentButtonSelect,
   TitleSelect,
   InputEdit,
 } from "./styles";
+import { api } from "../../services/api";
 
 const shadowContent = {
   shadowColor: "#000",
@@ -30,7 +29,6 @@ const shadowContent = {
 export function EditProfile({
   handleOpenModalEditProfile,
   email,
-  setEmail,
   phone,
   name,
   familyName,
@@ -47,18 +45,25 @@ export function EditProfile({
   const handleChangeUser = async () => {
     try {
       setLoading(true);
-      const data = {
-        phone: newPhone,
-        email,
+      const options = {
+        headers: {
+          "Content-type": "Application/json",
+          Accept: "Application/json",
+        },
+        data: {
+          phone: newPhone,
+          email,
+        },
       };
-      await axios.put("http://localhost:3333/user", data);
+      await api.put("user", options);
       Alert.alert("Alteração concluída");
       setLoading(false);
       // @ts-ignore
       setUser((prevState: any) => ({ ...prevState, phone: newPhone }));
-      navigation.navigate("myAds");
+      navigation.navigate("profile");
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -66,11 +71,14 @@ export function EditProfile({
     <Container>
       <ContentHeader style={shadowContent}>
         <Title>Editar perfil</Title>
-        <Icon
-          name="arrowleft"
-          onPress={handleOpenModalEditProfile}
-          hitSlop={{ top: 20, left: 20, bottom: 20, right: 20 }}
-        />
+        <Icon onPress={handleOpenModalEditProfile}>
+          <AntDesign
+            name="arrowleft"
+            size={32}
+            color={theme.colors.primary}
+            hitSlop={{ top: 20, left: 20, bottom: 20, right: 20 }}
+          />
+        </Icon>
       </ContentHeader>
 
       <ContentChangeUser>

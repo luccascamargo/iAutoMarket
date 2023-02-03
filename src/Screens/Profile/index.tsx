@@ -1,13 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useContext, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Modal,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { useState } from "react";
+import { Alert, Modal, Text, TouchableOpacity, View } from "react-native";
 import { RFValue } from "react-native-responsive-fontsize";
 import { EditProfile } from "../../components/EditProfile";
 import { useTheme } from "styled-components";

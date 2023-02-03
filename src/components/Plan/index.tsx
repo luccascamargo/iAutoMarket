@@ -1,6 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
 import * as Linking from "expo-linking";
-import axios from "axios";
 import { useState } from "react";
 import { Modal, Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -22,6 +21,7 @@ import {
   Icon,
 } from "./styles";
 import { Spinner } from "native-base";
+import { api } from "../../services/api";
 
 interface featuresProps {
   key: number;
@@ -73,15 +73,18 @@ export function Plan({ ...props }: PlanProps) {
         return;
       }
 
-      const config = {
-        customer_id: user?.customer_id,
-        key: props.lookUpKey,
+      const options = {
+        headers: {
+          "Content-type": "Application/json",
+          Accept: "Application/json",
+        },
+        data: {
+          customer_id: user?.customer_id,
+          key: props.lookUpKey,
+        },
       };
 
-      const { data } = await axios.post(
-        "http://localhost:3333/create-checkout-session",
-        config
-      );
+      const { data } = await api.post("create-checkout-session", options);
 
       setLoading(false);
       Linking.openURL(data);

@@ -15,7 +15,7 @@ import { ThemeProvider } from "styled-components/native";
 
 import theme from "./src/Globals/styles/theme";
 import { RoutesApp } from "./src/Routes/app.routes";
-import { AuthProvider } from "./src/contexts/AuthContext";
+import { AuthProvider, useAuth } from "./src/contexts/AuthContext";
 
 import { Amplify } from "aws-amplify";
 import { NativeBaseProvider } from "native-base";
@@ -25,7 +25,13 @@ Amplify.configure(awsmobile);
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
+  const { user, isAuthenticated } = useAuth();
 
+  if (isAuthenticated) {
+    if (!user.phone) {
+      console.log("sem telefone");
+    }
+  }
   useEffect(() => {
     async function prepare() {
       try {
@@ -81,6 +87,7 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <NativeBaseProvider>
         <ThemeProvider theme={theme}>
+          {/* @ts-ignore */}
           <NavigationContainer linking={linking}>
             <StatusBar
               backgroundColor={theme.colors.primary}

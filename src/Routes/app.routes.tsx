@@ -93,8 +93,8 @@ function AppRoutes() {
 
   if (loading) {
     return (
-      <View>
-        <ActivityIndicator size="large" color="#666" />
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
   }
@@ -157,9 +157,7 @@ function AppRoutes() {
             ),
           }}
         />
-      ) : (
-        <></>
-      )}
+      ) : null}
       <Screen
         name="more"
         component={More}

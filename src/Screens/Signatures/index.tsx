@@ -20,6 +20,8 @@ import { Separator } from "../../components/ModalSelect/styles";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Button } from "../../components/Button";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { api } from "../../services/api";
 
 const shadowContent = {
   shadowColor: "#000",
@@ -54,6 +56,7 @@ const listPlans = [
 export function Signatures() {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
+  const theme = useTheme();
   const navigation = useNavigation();
 
   const handleSubscription = async () => {
@@ -66,13 +69,16 @@ export function Signatures() {
       }
 
       const config = {
-        customer_id: user?.customer_id,
+        headers: {
+          "Content-type": "Application/json",
+          Accept: "Application/json",
+        },
+        data: {
+          customer_id: user?.customer_id,
+        },
       };
 
-      const { data } = await axios.post(
-        "http://localhost:3333/create-checkout-session",
-        config
-      );
+      const { data } = await api.post("create-checkout-session", config);
 
       setLoading(false);
       Linking.openURL(data);
@@ -85,7 +91,9 @@ export function Signatures() {
   return (
     <Container>
       <ContentHeader elevation={10} style={shadowContent}>
-        <Icon name="arrowleft" onPress={navigation.goBack} />
+        <Icon onPress={navigation.goBack}>
+          <AntDesign name="arrowleft" color={theme.colors.primary} size={32} />
+        </Icon>
         <Title>Minhas assinaturas</Title>
       </ContentHeader>
       <Content>

@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import axios from "axios";
 
 // let storageUser: any = AsyncStorage.getItem("@serramotorsAuth");
@@ -7,7 +8,14 @@ import axios from "axios";
 // }
 
 export const api = axios.create({
-  baseURL: "http://localhost:3333/",
+  baseURL:
+    Platform.OS === "ios"
+      ? "https://expressjs-prisma-production-0560.up.railway.app/"
+      : "https://expressjs-prisma-production-0560.up.railway.app/",
+  headers: {
+    "Content-type": "Application/json",
+    Accept: "Application/json",
+  },
 });
 
 // api.interceptors.response.use(

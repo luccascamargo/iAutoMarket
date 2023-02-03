@@ -35,7 +35,7 @@ export const ContentWrap = styled.View`
   justify-content: space-between;
 `;
 
-export const ContentFilters = styled.View`
+export const ContentFilters = styled.TouchableOpacity`
   flex-direction: row;
   align-items: center;
 `;

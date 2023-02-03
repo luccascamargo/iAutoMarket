@@ -1,4 +1,5 @@
 import { Card } from "../../components/Card";
+import { AntDesign } from "@expo/vector-icons";
 import {
   ContentHeader,
   Title,
@@ -112,7 +113,9 @@ export function Favorites() {
     <Container>
       <ContentHeader style={shadowContent}>
         <Title>Meus favoritos</Title>
-        <Icon name="arrowleft" onPress={navigation.goBack} />
+        <Icon onPress={navigation.goBack}>
+          <AntDesign name="arrowleft" size={32} color={theme.colors.primary} />
+        </Icon>
       </ContentHeader>
 
       <ContainerTextClean>

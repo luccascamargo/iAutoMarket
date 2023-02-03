@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { Auth } from "aws-amplify";
+import axios from "axios";
 import { useState } from "react";
 import {
   Alert,
@@ -11,7 +12,6 @@ import {
   View,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { log } from "react-native-reanimated";
 import { useTheme } from "styled-components";
 
 import { Button } from "../../components/Button";
@@ -59,20 +59,21 @@ export function Login() {
     try {
       setLoading(true);
       const user = await Auth.signIn({ username: email, password });
-      await api.post("/create-customer", {
+      await api.post("create-customer", {
         data: {
-          firstName: user.attributes.given_name,
+          firstName: `${user.attributes.given_name} ${user.attributes.family_name}`,
           email: user.attributes.email,
         },
         headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json",
+          "Content-type": "Application/json",
+          Accept: "Application/json",
         },
       });
       SignIn(user);
       setLoading(false);
       navigation.navigate("profile");
     } catch (error) {
+      Auth.signOut();
       Alert.alert(
         "Algo de errado aconteceu, tente novamente ou entre em contato com nosso suporte"
       );
@@ -87,7 +88,7 @@ export function Login() {
     }
 
     await Auth.forgotPassword(email)
-      .then((data) => {
+      .then(() => {
         Alert.alert("Um código foi enviado para o seu e-mail");
         navigation.navigate("forgotPassword", { email });
       })
@@ -95,8 +96,6 @@ export function Login() {
         Alert.alert("Algo de errado aconteceu, tenta novamente mais tarde");
       });
   };
-
-  const handleGoogle = async () => {};
 
   return (
     <TouchableNativeFeedback onPress={Keyboard.dismiss}>
@@ -165,12 +164,13 @@ export function Login() {
           <View style={styles.ContentText}>
             <TextCreateAccount>Não tem uma conta? </TextCreateAccount>
 
-            <TextCreateAccount
-              style={{ color: theme.colors.primary }}
+            <TouchableOpacity
               onPress={() => navigation.navigate("createAccount")}
             >
-              Crie agora
-            </TextCreateAccount>
+              <TextCreateAccount style={{ color: theme.colors.primary }}>
+                Crie agora
+              </TextCreateAccount>
+            </TouchableOpacity>
           </View>
         </ContentInfos>
       </Container>

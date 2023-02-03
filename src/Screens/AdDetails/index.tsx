@@ -31,8 +31,6 @@ export function AdDetails({ route }: any) {
 
   const x = useRef(new Animated.Value(0)).current;
 
-  console.log(data.Users);
-
   return (
     <Container>
       <ContentHeader style={shadowContent}>

@@ -59,8 +59,9 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "styled-components";
 import { Input } from "../../components/Input";
 import { useNavigation } from "@react-navigation/native";
-import { Checkbox } from "native-base";
+import { Checkbox, Spinner } from "native-base";
 import { ModalOptionals } from "../../components/ModalOptionals";
+import { api } from "../../services/api";
 
 const numberMask = createNumberMask({
   separator: ".",
@@ -71,10 +72,7 @@ const wait = (timeout: number) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
 };
 
-const urlAPI =
-  Platform.OS === "ios"
-    ? "http://localhost:3333/create-advert"
-    : "http://192.168.1.3:3333/create-advert";
+const urlAPI = "create-advert";
 
 const shadowContent = {
   shadowColor: "#000",
@@ -254,7 +252,12 @@ export function InsertAd() {
   useEffect(() => {
     const getOptionals = async () => {
       try {
-        const { data } = await axios.get("http://localhost:3333/optionals");
+        const { data } = await api.get("optionals", {
+          headers: {
+            "Content-type": "Application/json",
+            Accept: "Application/json",
+          },
+        });
         setOptionals(data);
       } catch (err) {
         console.log(err);
@@ -336,7 +339,7 @@ export function InsertAd() {
     formData.append("model_value", modelCar.code);
     formData.append("year_model", yearModel.name);
     formData.append("year_model_value", yearModel.code);
-    formData.append("color", color.name);
+    formData.append("color", color.code);
     formData.append("price", (price / 100).toString());
     formData.append("plate", plate.toString());
     formData.append("mileage", km.toString());
@@ -347,11 +350,12 @@ export function InsertAd() {
     formData.append(`optionals`, JSON.stringify(opt));
 
     try {
-      const { data } = await axios.post(urlAPI, formData);
+      const { data } = await api.post(urlAPI, formData);
       if (data.code === "ATPLAN") {
         Alert.alert(data.message);
         navigation.navigate("signatures");
         setLoadingCreate(false);
+        return;
       }
       handleReset();
       setLoadingCreate(false);
@@ -397,6 +401,7 @@ export function InsertAd() {
     setDescription("");
     setCep("");
     setArrayImages([]);
+    setOpt([]);
   };
 
   const onRefresh = useCallback(() => {
@@ -418,6 +423,7 @@ export function InsertAd() {
   };
 
   const openImagePickerAsync = async () => {
+    setLoading(true);
     if (user.stripePlan === "SILVER") {
       let pickerResult = await ImagePicker.launchImageLibraryAsync({
         allowsMultipleSelection: true,
@@ -425,6 +431,7 @@ export function InsertAd() {
       });
 
       if (pickerResult.canceled) {
+        setLoading(false);
         return;
       }
 
@@ -439,6 +446,7 @@ export function InsertAd() {
       });
 
       if (pickerResult.canceled) {
+        setLoading(false);
         return;
       }
 
@@ -453,6 +461,7 @@ export function InsertAd() {
       });
 
       if (pickerResult.canceled) {
+        setLoading(false);
         return;
       }
 
@@ -460,6 +469,8 @@ export function InsertAd() {
         setArrayImages((prevState: any) => [...prevState, image]);
       });
     }
+
+    setLoading(false);
   };
 
   return (
@@ -534,7 +545,9 @@ export function InsertAd() {
               onPress={openImagePickerAsync}
               style={shadowContent}
             >
-              <TextSelectImages>Adicione suas fotos</TextSelectImages>
+              <TextSelectImages>
+                {loading ? <Spinner /> : "Adicione suas fotos"}
+              </TextSelectImages>
             </ButtonSelectImages>
           )}
 
@@ -710,7 +723,11 @@ export function InsertAd() {
               <TitleSelect>Selecione os opcionais</TitleSelect>
             </View>
             <ButtonSelect
-              title="Selecione"
+              title={
+                opt.length === 0
+                  ? "Selecione"
+                  : `${opt.length} opcional(s) selecionados`
+              }
               items={opt}
               onPress={handleOpenOptionals}
             />

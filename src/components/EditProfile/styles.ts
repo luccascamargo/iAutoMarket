@@ -23,9 +23,7 @@ export const ContentHeader = styled.View`
   background-color: ${({ theme }) => theme.colors.background};
 `;
 
-export const Icon = styled(AntDesign)`
-  font-size: ${RFValue(25)}px;
-  color: ${({ theme }) => theme.colors.primary};
+export const Icon = styled.TouchableOpacity`
   position: absolute;
   left: ${RFValue(20)}px;
   bottom: ${RFValue(15)}px;

@@ -1,4 +1,5 @@
 import { ScrollView, Text, TouchableOpacity } from "react-native";
+import { getBottomSpace } from "react-native-iphone-x-helper";
 
 import {
   Container,
@@ -131,7 +132,7 @@ export function Home() {
                     style={{
                       color: theme.colors.title,
                       fontFamily: theme.fonts.medium,
-                      fontSize: RFValue(11),
+                      fontSize: RFValue(10),
                     }}
                   >
                     {user?.stripePlan}
@@ -162,12 +163,17 @@ export function Home() {
               </TouchableOpacity>
             </View>
           ) : (
-            <Icon name="user" onPress={() => navigation.navigate("login")} />
+            <TouchableOpacity onPress={() => navigation.navigate("login")}>
+              <Icon name="user" />
+            </TouchableOpacity>
           )}
         </ContentInfos>
       </ContentHeader>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: getBottomSpace() + 30 }}
+      >
         <Title>O que deseja fazer?</Title>
 
         <ContentBox>

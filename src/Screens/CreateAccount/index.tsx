@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Auth } from "aws-amplify";
 import { useState } from "react";
 import {
+  Alert,
   Dimensions,
   Keyboard,
   StyleSheet,
@@ -32,6 +33,7 @@ export function CreateAccount() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigation = useNavigation();
   const theme = useTheme();
@@ -43,25 +45,27 @@ export function CreateAccount() {
   };
 
   async function signUp() {
-    await Auth.signUp({
-      username: email,
-      password,
-      attributes: {
-        email,
-        given_name: firstName,
-        family_name: lastName,
-      },
-      autoSignIn: {
-        // optional - enables auto sign in after user is confirmed
-        enabled: true,
-      },
-    })
-      .then(() => {
-        navigation.navigate("confirmAccount", { email });
-      })
-      .catch((err) => {
-        console.log("erro ao se inscrever:", err);
+    try {
+      setLoading(true);
+      await Auth.signUp({
+        username: email,
+        password,
+        attributes: {
+          email,
+          given_name: firstName,
+          family_name: lastName,
+        },
+        autoSignIn: {
+          enabled: true,
+        },
       });
+      setLoading(false);
+      navigation.navigate("confirmAccount", { email });
+    } catch (error) {
+      setLoading(false);
+      console.log("erro ao se inscrever:", error);
+      Alert.alert("Erro ao se inscrever, entre em contato conosco");
+    }
   }
 
   return (
@@ -118,7 +122,11 @@ export function CreateAccount() {
               </TextHidePass>
             </View>
 
-            <Button title="Cadastrar" onPress={signUp} />
+            <Button
+              title="Cadastrar"
+              onPress={signUp}
+              disabled={loading && true}
+            />
           </ContentLogin>
 
           <ContentSeparator>

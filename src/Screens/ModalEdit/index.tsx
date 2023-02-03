@@ -43,6 +43,8 @@ import { ImageCard } from "../../components/ImageCard";
 import { useTheme } from "styled-components";
 import { useAuth } from "../../contexts/AuthContext";
 import { Input } from "../../components/Input";
+import { ModalOptionals } from "../../components/ModalOptionals";
+import { api } from "../../services/api";
 
 const numberMask = createNumberMask({
   separator: ".",
@@ -67,6 +69,7 @@ const shadowContent = {
 
 export function ModalEdit({ route, navigation }: any) {
   const advert = route.params.dataItem;
+
   const priceFormatted = parseInt(advert?.price) * 100;
   const [refreshing, setRefreshing] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -123,6 +126,14 @@ export function ModalEdit({ route, navigation }: any) {
     name: advert?.color,
   });
 
+  useEffect(() => {
+    advert?.optionals.map((opt) => {
+      setOpt((old) => [...old, { id: opt.id }]);
+    });
+  }, []);
+
+  const [opt, setOpt] = useState([]);
+  console.log(opt);
   const [openTypeCar, setOpenTypeCar] = useState(false);
   const [openBoard, setOpenBoard] = useState(false);
   const [openModel, setOpenModel] = useState(false);
@@ -130,6 +141,8 @@ export function ModalEdit({ route, navigation }: any) {
   const [openModalDoors, setOpenModalDoors] = useState(false);
   const [openTransmissionType, setOpenTransmissionType] = useState(false);
   const [openColor, setOpenColor] = useState(false);
+  const [openOptionals, setOpenOptionals] = useState(false);
+  const [optionals, setOptionals] = useState([]);
 
   const handleOpenTypeCar = () => setOpenTypeCar(!openTypeCar);
   const handleOpenBoard = () => setOpenBoard(!openBoard);
@@ -139,6 +152,7 @@ export function ModalEdit({ route, navigation }: any) {
   const handleOpenTransmissionType = () =>
     setOpenTransmissionType(!openTransmissionType);
   const handleOpenColor = () => setOpenColor(!openColor);
+  const handleOpenOptionals = () => setOpenOptionals(!openOptionals);
 
   const theme = useTheme();
   const [loadingUpdate, setLoadingUpdate] = useState(false);
@@ -204,6 +218,7 @@ export function ModalEdit({ route, navigation }: any) {
     formData.append("doors", valueDoors.code);
     formData.append("transmission", transmissionType.code);
     formData.append("description", description);
+    formData.append(`optionals`, JSON.stringify(opt));
 
     axios
       .put(urlAPI, formData)
@@ -247,6 +262,24 @@ export function ModalEdit({ route, navigation }: any) {
     onRefresh();
     setIsVisible(false);
   };
+
+  useEffect(() => {
+    const getOptionals = async () => {
+      try {
+        const { data } = await api.get("optionals", {
+          headers: {
+            "Content-type": "Application/json",
+            Accept: "Application/json",
+          },
+        });
+        setOptionals(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    getOptionals();
+  }, []);
 
   return (
     <Container>
@@ -433,19 +466,21 @@ export function ModalEdit({ route, navigation }: any) {
             />
           </ContentButtonSelect>
 
-          <ContentButtonSelect elevation={10}>
-            <View style={{ width: "100%", paddingLeft: 20 }}>
-              <TitleSelect>Descrição</TitleSelect>
-            </View>
-            <Input
-              value={description}
-              multiline
-              scrollEnabled={false}
-              onChangeText={(e) => {
-                setDescription(e);
-              }}
-            />
-          </ContentButtonSelect>
+          {user.stripePlan !== "SILVER" && (
+            <ContentButtonSelect elevation={10}>
+              <View style={{ width: "100%", paddingLeft: 20 }}>
+                <TitleSelect>Descrição</TitleSelect>
+              </View>
+              <Input
+                value={description}
+                multiline
+                scrollEnabled={false}
+                onChangeText={(e) => {
+                  setDescription(e);
+                }}
+              />
+            </ContentButtonSelect>
+          )}
 
           <ContentButtonSelect elevation={10}>
             <View style={{ width: "100%", paddingLeft: 20 }}>
@@ -481,6 +516,17 @@ export function ModalEdit({ route, navigation }: any) {
               error={transmissionError}
               title={transmissionType.name}
               onPress={handleOpenTransmissionType}
+            />
+          </ContentButtonSelect>
+
+          <ContentButtonSelect elevation={10}>
+            <View style={{ width: "100%", paddingLeft: 20 }}>
+              <TitleSelect>Selecione os opcionais</TitleSelect>
+            </View>
+            <ButtonSelect
+              title="Selecione"
+              items={opt}
+              onPress={handleOpenOptionals}
             />
           </ContentButtonSelect>
 
@@ -552,6 +598,17 @@ export function ModalEdit({ route, navigation }: any) {
                 value={transmissionType}
                 changeValue={setTransmissionType}
                 changeModal={handleOpenTransmissionType}
+              />
+            </GestureHandlerRootView>
+          </Modal>
+
+          <Modal visible={openOptionals} animationType="slide">
+            <GestureHandlerRootView style={{ width: "100%", height: "100%" }}>
+              <ModalOptionals
+                dataItems={optionals}
+                value={opt}
+                changeValue={setOpt}
+                changeModal={handleOpenOptionals}
               />
             </GestureHandlerRootView>
           </Modal>

@@ -53,8 +53,8 @@ export function Salesman({ name, email, phone }: any) {
       <ContentUser>
         <View
           style={{
-            width: RFValue(80),
-            height: RFValue(80),
+            width: RFValue(50),
+            height: RFValue(50),
             borderRadius: 50,
             backgroundColor: theme.colors.white,
             alignItems: "center",
@@ -63,7 +63,7 @@ export function Salesman({ name, email, phone }: any) {
         >
           <Text
             style={{
-              fontSize: RFValue(40),
+              fontSize: RFValue(20),
               color: theme.colors.title,
               fontFamily: theme.fonts.medium,
             }}

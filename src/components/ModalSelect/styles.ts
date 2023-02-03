@@ -61,7 +61,7 @@ export const Option = styled.TouchableOpacity<OptionProps>`
 export const TextOption = styled.Text<OptionProps>`
   color: ${({ isActive, theme }) =>
     isActive ? theme.colors.primary : theme.colors.text};
-  font-size: ${RFValue(13)}px;
+  font-size: ${RFValue(12)}px;
   font-family: ${({ theme }) => theme.fonts.medium};
 `;
 

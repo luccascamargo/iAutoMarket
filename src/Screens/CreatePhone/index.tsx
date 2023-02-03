@@ -1,6 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
-import { Auth } from "aws-amplify";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -9,11 +6,10 @@ import {
   TouchableNativeFeedback,
 } from "react-native";
 import { Masks } from "react-native-mask-input";
-import { useTheme } from "styled-components";
 
 import { Button } from "../../components/Button";
-import { Input } from "../../components/Input";
 import { useAuth } from "../../contexts/AuthContext";
+import { api } from "../../services/api";
 import {
   Container,
   ContentInfos,
@@ -53,12 +49,18 @@ export function CreatePhone() {
 
   const handleUserUpdate = async () => {
     try {
-      const data = {
-        phone,
-        email: user.attributes.email,
-        name: user.attributes.given_name + user.attributes.family_name,
+      const options = {
+        headers: {
+          "Content-type": "Application/json",
+          Accept: "Application/json",
+        },
+        data: {
+          phone,
+          email: user.attributes.email,
+          name: user.attributes.given_name + user.attributes.family_name,
+        },
       };
-      await axios.put("http://localhost:3333/user", data);
+      await api.put("user", options);
     } catch (error) {
       console.log(error);
     }

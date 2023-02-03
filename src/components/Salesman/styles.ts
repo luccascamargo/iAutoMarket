@@ -1,5 +1,3 @@
-import { TouchableOpacity } from "react-native";
-import { RectButton } from "react-native-gesture-handler";
 import { RFValue } from "react-native-responsive-fontsize";
 import styled from "styled-components/native";
 
@@ -10,6 +8,7 @@ export const Container = styled.View`
   margin-top: ${RFValue(30)}px;
 `;
 export const ContentUser = styled.View`
+  width: 100%;
   flex-direction: row;
   align-items: center;
 `;
@@ -31,7 +30,6 @@ export const Line = styled.View`
 
   margin: ${RFValue(20)}px 0;
 `;
-export const ContentLocale = styled.View``;
 export const Title = styled.Text`
   color: ${({ theme }) => theme.colors.text};
   font-family: ${({ theme }) => theme.fonts.regular};
@@ -44,7 +42,8 @@ export const Locale = styled.Text`
 `;
 
 export const ContentUserInfo = styled.View`
-  margin-left: ${RFValue(25)}px;
+  margin-left: ${RFValue(15)}px;
+  width: ${RFValue(200)}px;
 `;
 
 export const Email = styled.Text`

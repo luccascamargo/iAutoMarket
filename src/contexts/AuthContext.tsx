@@ -1,6 +1,6 @@
 import { Auth } from "aws-amplify";
-import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
+import { api } from "../services/api";
 
 interface AuthContextProps {
   user: UserAuth;
@@ -35,23 +35,26 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     async function loadApp() {
       try {
-        setLoading(false);
+        setLoading(true);
         const currentUser = await Auth.currentAuthenticatedUser();
 
         if (currentUser) {
           setUser(currentUser);
 
-          const data: any = {
-            email: currentUser?.attributes.email,
+          const options: any = {
+            headers: {
+              "Content-type": "Application/json",
+              Accept: "Application/json",
+            },
+            data: {
+              email: currentUser?.attributes.email,
+            },
           };
-          const response = await axios.post(
-            "http://localhost:3333/sync-user",
-            data
-          );
+          const response = await api.post("sync-user", options);
           setUser((prevState: UserAuth) => ({
             ...prevState,
             customer_id: response.data.user.customer_id,
-            stripePlan: response.data.user.stripe_product_id,
+            stripePlan: response.data.user.stripe_product_id || "DEFAULT",
             id: response.data.user.id,
             phone: response.data.user.phone,
           }));
@@ -60,7 +63,6 @@ export function AuthProvider({ children }) {
         Auth.signOut();
         console.log(err);
       }
-
       setLoading(false);
     }
     loadApp();

@@ -97,21 +97,3 @@ export const TitleEditing = styled.Text`
   font-family: ${({ theme }) => theme.fonts.medium};
   font-size: ${RFValue(15)}px;
 `;
-
-export const ContentWhats = styled.TouchableOpacity`
-  position: absolute;
-  right: ${RFValue(20)}px;
-  bottom: ${RFValue(55)}px;
-
-  width: ${RFValue(50)}px;
-  height: ${RFValue(50)}px;
-
-  border-radius: ${RFPercentage(50)}px;
-`;
-
-export const ButtonWhats = styled.Image`
-  background-color: #20b038;
-  width: 100%;
-  height: 100%;
-  border-radius: ${RFPercentage(50)}px;
-`;

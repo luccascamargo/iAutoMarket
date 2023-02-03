@@ -40,6 +40,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "styled-components";
 import { createURL } from "expo-linking";
 import { ModalOptionals } from "../../components/ModalOptionals";
+import { api } from "../../services/api";
 
 const shadowContent = {
   shadowColor: "#000",
@@ -47,11 +48,6 @@ const shadowContent = {
   shadowRadius: 2,
   shadowOffset: { width: 0, height: 0 },
 };
-
-const urlAPI =
-  Platform.OS === "ios"
-    ? "http://localhost:3333/filtered"
-    : "http://192.168.1.3:3333/filtered";
 
 const width = Dimensions.get("screen").width;
 
@@ -117,7 +113,6 @@ export function FilterSelect() {
   const [openColor, setOpenColor] = useState(false);
   const [openCity, setOpenCity] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [order, setOrder] = useState("Data");
 
   const handleOpenTypeCar = () => setOpenTypeCar(!openTypeCar);
   const handleOpenCity = () => setOpenCity(!openCity);
@@ -150,10 +145,11 @@ export function FilterSelect() {
       maxPrice: maxPrice === "Selecione" ? 2000000 : maxPrice,
       minYear: minYear === "Selecione" ? 1950 : minYear,
       maxYear: maxYear === "Selecione" ? 2023 : maxYear,
+      optionals: JSON.stringify(opt),
     };
 
-    await axios
-      .post(urlAPI, data)
+    await api
+      .post("filtered", data)
       .then((response) => {
         setTimeout(() => {
           setIsLoading(false);
@@ -209,6 +205,7 @@ export function FilterSelect() {
     setMaxPrice("Selecione");
     setMinYear("Selecione");
     setMaxYear("Selecione");
+    setOpt([]);
   };
 
   useEffect(() => {
@@ -342,7 +339,12 @@ export function FilterSelect() {
   useEffect(() => {
     const getOptionals = async () => {
       try {
-        const { data } = await axios.get("http://localhost:3333/optionals");
+        const { data } = await api.get("optionals", {
+          headers: {
+            "Content-type": "Application/json",
+            Accept: "Application/json",
+          },
+        });
         setOptionals(data);
       } catch (err) {
         console.log(err);
@@ -536,27 +538,14 @@ export function FilterSelect() {
               <TitleSelect>Selecione os opcionais</TitleSelect>
             </View>
             <ButtonSelect
-              title="Selecione"
+              title={
+                opt.length === 0
+                  ? "Selecione"
+                  : `${opt.length} opcional(s) selecionados`
+              }
               items={opt}
               onPress={handleOpenOptionals}
             />
-          </ContentButtonSelect>
-
-          <ContentButtonSelect>
-            <View style={{ width: "100%", paddingLeft: 20 }}>
-              <TitleSelect>Ordene por</TitleSelect>
-            </View>
-            <View style={{ width: "90%", marginTop: 10 }}>
-              <SegmentedControl
-                values={["Data", "Preço", "km"]}
-                selectedIndex={0}
-                onValueChange={(event) => setOrder(event)}
-                fontStyle={{ color: theme.colors.primary }}
-                activeFontStyle={{ color: theme.colors.white }}
-                tintColor={theme.colors.primary}
-                backgroundColor={theme.colors.background}
-              />
-            </View>
           </ContentButtonSelect>
 
           <Button title="Filtrar" onPress={handleCreate} />

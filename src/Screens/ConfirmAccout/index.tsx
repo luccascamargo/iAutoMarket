@@ -18,6 +18,7 @@ import {
 export function ConfirmAccount({ route }) {
   const [code, setCode] = useState("");
   const { email } = route.params;
+  const [loading, setLoading] = useState(false);
 
   const theme = useTheme();
 
@@ -25,9 +26,12 @@ export function ConfirmAccount({ route }) {
 
   async function confirmSignUp() {
     try {
+      setLoading(true);
       await Auth.confirmSignUp(email, code);
+      setLoading(false);
       navigation.navigate("login");
     } catch (error) {
+      setLoading(false);
       console.log("Algo de errado aconteceu", error);
       Alert.alert("Algo de errado aconteceu");
     }
